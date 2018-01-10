@@ -781,11 +781,12 @@ public class ItemManagementBean implements ItemManagementBeanLocal, ItemManageme
         System.out.println("editCountryItemPricing() called.");
         ReturnHelper helper = new ReturnHelper();
         try {
+            
             Item_CountryEntity itemCountry = em.find(Item_CountryEntity.class, countryItemId);
             itemCountry.setRetailPrice(price);
             em.merge(itemCountry);
             em.flush();
-
+            
             System.out.println("editCountryItemPricing(): Successful.");
 
             helper.setMessage("Record updated successfully.");
