@@ -22,14 +22,21 @@ public class CountryItemPricingManagement_UpdateCountryItemPricingServlet extend
         try {
             String id = request.getParameter("id");
             String price = request.getParameter("setPrice");
+            try {
+                Double.parseDouble(price);
+            }
+            catch (NumberFormatException e) {
+                response.sendRedirect("CountryItemPricingManagement_Servlet?errMsg=Enter a valid number");
+            }
             if (Double.parseDouble(price)>99999 || Double.parseDouble(price)<0){
               response.sendRedirect("CountryItemPricingManagement_Servlet?errMsg=Price should be between 0 and 99999, please try again.");
             }
-            else {           
+            else {
             ReturnHelper helper = itemManagementBean.editCountryItemPricing(Long.parseLong(id), Double.parseDouble(price));
 
             response.sendRedirect("CountryItemPricingManagement_Servlet?errMsg=" + helper.getMessage());
             }
+          
         } catch (Exception ex) {
             out.println(ex);
             response.sendRedirect("CountryItemPricingManagement_Servlet?errMsg=Failed to update, please try again.");

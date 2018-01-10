@@ -9,11 +9,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <jsp:include page="checkCountry.jsp" />
 <%
-    String furnitureNumber = request.getParameter("furnitureNo");
-    int n = Integer.parseInt(furnitureNumber);  //convert string to int
-    System.out.print(furnitureNumber);
-    String sku = request.getParameter("sku");   
-    String category =request.getParameter("category");
+    String sku = request.getParameter("sku");
     if (sku == null) {
 %>
 <jsp:forward page="index.jsp" />
@@ -33,13 +29,8 @@
         <%
             List<StoreEntity> storesInCountry = (List<StoreEntity>) session.getAttribute("storesInCountry");
             List<Furniture> furnitures = (List<Furniture>) (session.getAttribute("furnitures"));
-              System.out.println("furniture size2:" + furnitures.size());
             /*define your variables here*/
             /*set your variables here*/
-         
-             // String category = (String) (session.getAttribute("category"));
-              out.print("category"+category);
-              out.print("furniture number"+furnitureNumber);
         %>
         <div class="body">
             <jsp:include page="menu2.jsp" />
@@ -60,38 +51,37 @@
                             <div class="col-md-6">
                                 <div>
                                     <div class="thumbnail">
-                                        <img alt="" class="img-responsive img-rounded" src="../../..<%=furnitures.get(n).getImageUrl()%>">
+                                        <img alt="" class="img-responsive img-rounded" src="../../..<%/*insert code here*/%>">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="summary entry-summary">
-                                    <!--change the "Insert category" so as to displayy -->
-                                    <h2 class="shorter"><strong><%=furnitures.get(n).getName()%></strong></h2>                                 
+                                    <h2 class="shorter"><strong>Insert category name</strong></h2>
                                     <%
                                         if (isMemberLoggedIn == true) {
                                     %>
                                     <form action="../../ECommerce_AddFurnitureToListServlet">
-                                        <input type="hidden" name="id" value="<%=furnitures.get(n).getId()%>"/>
-                                        <input type="hidden" name="SKU" value="<%=furnitures.get(n).getSKU()%>"/>
-                                        <input type="hidden" name="price" value=" <%=furnitures.get(n).getPrice()%>"/>
-                                        <input type="hidden" name="name" value="<%=furnitures.get(n).getName()%>"/>
-                                        <input type="hidden" name="imageURL" value="<%=furnitures.get(n).getImageUrl()%>"/>
-                                        <input type="submit" name="btnEdit" class="btn btn-primary" id="<%=category%>" value="Add To Cart"/>
+                                        <input type="hidden" name="id" value="<%/*insert code here*/%>"/>
+                                        <input type="hidden" name="SKU" value="<%/*insert code here*/%>"/>
+                                        <input type="hidden" name="price" value="<%/*insert code here*/%>"/>
+                                        <input type="hidden" name="name" value="<%/*insert code here*/%>"/>
+                                        <input type="hidden" name="imageURL" value="<%/*insert code here*/%>"/>
+                                        <input type="submit" name="btnEdit" class="btn btn-primary" id="<%/*insert code here*/%>" value="Add To Cart"/>
                                     </form>
                                     <%}%>
-                                    <p class="price"><h4 class="amount">$<%=furnitures.get(n).getPrice()%></h4></p>
+                                    <p class="price"><h4 class="amount"><%/*insert code here*/%></h4></p>
                                     <strong>Description</strong>
                                     <p class="taller">
-                                        <%=furnitures.get(n).getDescription()%>
+                                        <%/*insert code here*/%>
                                     </p>
                                     <p>
-                                        Height: <%=furnitures.get(n).getHeight()%><br/>
-                                        Length: <%=furnitures.get(n).getLength()%><br/>
-                                        Width: <%=furnitures.get(n).getWidth()%>
+                                        Height: <%/*insert code here*/%><br/>
+                                        Length: <%/*insert code here*/%><br/>
+                                        Width: <%/*insert code here*/%>
                                     </p>
                                     <div class="product_meta">
-                                        <span class="posted_in">Category: <a rel="tag" href="../../ECommerce_FurnitureCategoryServlet?cat=<%=furnitures.get(n).getCategory()%>"><%=furnitures.get(n).getCategory()%></a></span>
+                                        <span class="posted_in">Category: <a rel="tag" href="../../ECommerce_FurnitureCategoryServlet?cat=<%/*insert code here*/%>"><%/*insert code here*/%></a></span>
                                     </div>
                                     <br/><br/>
 
@@ -118,7 +108,6 @@
                                                 </select><br/><br/>
                                                 <input type="submit" class="btn btn-primary btn-icon" value="Check Item Availability"/>
                                                 <input type="hidden" name="sku" value="<%=sku%>"/>
-                                                <input type="hidden" name="furnitureNumber" value="<%=furnitureNumber%>"/>
                                                 <input type="hidden" name="type" value="Furniture"/>
                                             </form>
                                         </div>

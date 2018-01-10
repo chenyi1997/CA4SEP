@@ -18,18 +18,16 @@
                 }
             }
             function add() {
+                itemPricingManagement.id.value = id;
+                itemPricingManagement.setPrice.value = parseFloat($("#price" + id).val()).toFixed(1);
                 document.itemPricingManagement_Add.action = "../CountryItemPricingManagement_AddCountryItemPricingServlet";
                 document.itemPricingManagement_Add.submit();
             }
-            function round(value, precision) {
-            var multiplier = Math.pow(10, precision || 0);
-            return Math.round(value * multiplier) / multiplier;
-           }
             function update(id) {
                 itemPricingManagement.id.value = id;
                 itemPricingManagement.setPrice.value = Math.round($("#price" + id).val() * 10) / 10;
                 document.itemPricingManagement.action = "../CountryItemPricingManagement_UpdateCountryItemPricingServlet";
-                document.itemPricingManagement.submit();      
+                document.itemPricingManagement.submit();
             }
             function removeRecord() {
                 checkboxes = document.getElementsByName('delete');

@@ -24,7 +24,7 @@ public class ECommerce_AllRetailProductsServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         try {
-            HttpSession session = request.getSession();           
+            HttpSession session = request.getSession();
             Long countryID = (Long) session.getAttribute("countryID");
             System.out.println(countryID);
             List<RetailProduct> retailProducts = getRetailProductListRESTful(countryID);

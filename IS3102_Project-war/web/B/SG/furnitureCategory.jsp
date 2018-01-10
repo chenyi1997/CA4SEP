@@ -13,8 +13,7 @@
         isMemberLoggedIn = true;
     }
     String category = URLDecoder.decode(request.getParameter("cat"));
-    
-    if (category == null) { 
+    if (category == null) {
         pageContext.forward("/ECommerce_SelectCountry");
     }
 %>
@@ -24,7 +23,6 @@
         <%
             List<Furniture> furnitures = (List<Furniture>) (session.getAttribute("furnitures"));
             System.out.println("furniture size:" + furnitures.size());
-     
         %>
         <div class="body">
             <jsp:include page="menu2.jsp" />
@@ -49,9 +47,11 @@
                         <div class="row">
                             <ul class="products product-thumb-info-list" data-plugin-masonry>
                                 <%
-                                    try{
-                                        /*Insert code here*/
-                                       for(int i =0;i<furnitures.size();i++){                                                                                                            
+                                    try {
+                                        /**
+                                         * *insert code here**
+                                         */
+                                        for(int i = 0;i < furnitures.size();i++){
                                 %>
                                 <li class="col-md-3 col-sm-6 col-xs-12 product">
                                     <span class="product-thumb-info">
@@ -66,18 +66,14 @@
                                             <span class="product-thumb-info-act-left"><em>Width: <%=furnitures.get(i).getWidth()%></em></span><br/>
                                             <span class="product-thumb-info-act-left"><em>Price: $<%=furnitures.get(i).getPrice()%>0</em></span>
                                             <br/>
-                                       <form action="furnitureProductDetails.jsp" method="get">
+                                            <form action="furnitureProductDetails.jsp">
                                                 <input type="hidden" name="sku" value="<%=furnitures.get(i).getSKU()%>"/>
-                       
-                                                <!--pass over-->
-                                                <input type="hidden" name="furnitureNo" value="<%=i%>"/>
-                                                <input type="hidden" name="category" value="<%=category%>"/>
                                                 <input type="submit" class="btn btn-primary btn-block" value="More Details"/>
                                             </form>
                                             <%
                                                 if (isMemberLoggedIn == true) {
                                             %>
-                                           <form action="../../ECommerce_AddFurnitureToListServlet">
+                                            <form action="../../ECommerce_AddFurnitureToListServlet">
                                                 <input type="hidden" name="id" value="<%=furnitures.get(i).getId()%>"/>
                                                 <input type="hidden" name="SKU" value="<%=furnitures.get(i).getSKU()%>"/>
                                                 <input type="hidden" name="price" value="<%=furnitures.get(i).getPrice()%>"/>
@@ -87,12 +83,12 @@
                                             </form>
                                             <%
                                                 }
-                                               }
                                             %>
                                         </span>
                                     </span>
                                 </li>
                                 <%
+                                        }
                                     } catch (Exception ex) {
                                         System.out.println(ex);
                                         ex.printStackTrace();

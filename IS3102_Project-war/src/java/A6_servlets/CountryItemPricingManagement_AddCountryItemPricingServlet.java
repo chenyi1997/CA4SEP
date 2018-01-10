@@ -9,14 +9,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 public class CountryItemPricingManagement_AddCountryItemPricingServlet extends HttpServlet {
 
     @EJB
-  
     private ItemManagementBeanLocal itemManagementBeanLocal;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -27,14 +23,11 @@ public class CountryItemPricingManagement_AddCountryItemPricingServlet extends H
             String country = request.getParameter("country");
             String sku = request.getParameter("sku");
             String price = request.getParameter("price");
-            DecimalFormat nf = new DecimalFormat("#,##0.0");
-            nf.format(price);
             ReturnHelper helper;
-               
+            
             if (itemManagementBeanLocal.checkSKUExists(sku)){
             helper = itemManagementBeanLocal.addCountryItemPricing(Long.parseLong(country), sku, Double.parseDouble(price));
             
-                 
             if (!helper.getIsSuccess()) {
                 response.sendRedirect("CountryItemPricingManagement_Servlet?errMsg=" + helper.getMessage());
             } else {

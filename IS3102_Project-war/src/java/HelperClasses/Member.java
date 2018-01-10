@@ -16,7 +16,7 @@ public class Member {
     private String securityAnswer;
     private Integer age;
     private Integer income;
-    
+
     public Long getId() {
         return id;
     }

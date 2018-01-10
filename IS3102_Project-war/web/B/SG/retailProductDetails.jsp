@@ -7,38 +7,27 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <jsp:include page="checkCountry.jsp" />
 <%
-    String retailNumber = request.getParameter("retailNo");
-    int n = Integer.parseInt(retailNumber);  //convert string to int
     String sku = request.getParameter("sku");
-    
-   
     if (sku == null) {
 %>
 <jsp:forward page="index.jsp" />
 <%
-    }
-    Boolean isMemberLoggedIn = false;
-    String memberEmail = (String) (session.getAttribute("memberEmail"));
-    if (memberEmail == null) {
-        isMemberLoggedIn = false;
-    } else {
-        isMemberLoggedIn = true;
     }
 %>
 <html> <!--<![endif]-->
     <jsp:include page="header.html" />
     <body>
         <%
-            RetailProduct retailProduct=null;
             List<RetailProduct> retailProducts = (List<RetailProduct>) (session.getAttribute("retailProducts"));
+            RetailProduct retailProduct = new RetailProduct();
             List<StoreEntity> storesInCountry = (List<StoreEntity>) session.getAttribute("storesInCountry");
-            for(RetailProduct r: retailProducts){
-                if(r.getSKU().equals(sku)){
-                    retailProduct = r;
+            /*insert code here*/
+            for(RetailProduct product : retailProducts){
+                if (product.getSKU().equals(sku)){
+                    retailProduct = product;
                     break;
                 }
             }
-            
         %>
         <div class="body">
             <jsp:include page="menu2.jsp" />
@@ -59,21 +48,21 @@
                             <div class="col-md-6">
                                 <div>
                                     <div class="thumbnail">
-                                        <img alt="" class="img-responsive img-rounded" src="../../..<%=retailProducts.get(n).getImageUrl()%>">
+                                        <img alt="" class="img-responsive img-rounded" src="../../..<%=retailProduct.getImageUrl()%>">
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="summary entry-summary">
-                                    <h2 class="shorter"><strong><%=retailProducts.get(n).getName()%></strong></h2>
+                                    <h2 class="shorter"><strong><%=retailProduct.getName()%></strong></h2>
                                     <%
-                                                String normalPrice = "$" + retailProducts.get(n).getPrice() + "0";
-                                            %>
+                                        String normalPrice = "$" + retailProduct.getPrice() + "0";
+                                    %>
                                     <p class="price"><h4 class="amount"><%=normalPrice%></h4></p>
                                     <strong>Description</strong>
                                     <p class="taller">
-                                        <%=retailProducts.get(n).getDescription()%>
+                                        <%=retailProduct.getDescription()%>
                                     </p>
                                     <div class="product_meta">
                                         <span class="posted_in">Category: <a rel="tag" href="#"><%=retailProduct.getCategory()%></a></span>
@@ -103,7 +92,6 @@
                                                 </select><br/><br/>
                                                 <input type="submit" class="btn btn-primary btn-icon" value="Check Item Availability"/>
                                                 <input type="hidden" name="sku" value="<%=sku%>"/>
-                                               <input type="hidden" name="retailNumber" value="<%=retailNumber%>"/>
                                                 <input type="hidden" name="type" value="Retail Product"/>
                                             </form>
                                         </div>

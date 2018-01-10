@@ -1,28 +1,15 @@
-<%@page import="EntityManager.StoreEntity"%>
-<%@page import="java.net.URLDecoder"%>
 <%@page import="HelperClasses.RetailProduct"%>
 <%@page import="EntityManager.PromotionEntity"%>
 <%@page import="EntityManager.Item_CountryEntity"%>
 <%@page import="java.util.List"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <jsp:include page="checkCountry.jsp" />
-<%
-    Boolean isMemberLoggedIn = false;
-    String memberEmail = (String) (session.getAttribute("memberEmail"));
-    if (memberEmail == null) {
-        isMemberLoggedIn = false;
-    } else {
-        isMemberLoggedIn = true;
-    }
-         String category =request.getParameter("category");
-%>
 <html> <!--<![endif]-->
     <jsp:include page="header.html" />
     <body>
         <%
             List<RetailProduct> retailProducts = (List<RetailProduct>) (session.getAttribute("retailProducts"));
-            List<StoreEntity> storeInCountry = (List<StoreEntity>)(session.getAttribute("storesInCountry"));
-        
+            //System.out.println("test");
         %>
         <div class="body">
             <jsp:include page="menu2.jsp" />
@@ -47,15 +34,13 @@
                             <ul class="products product-thumb-info-list" data-plugin-masonry>
                                 <%
                                     try {
-                                        for(int i =0;i<retailProducts.size();i++){     
-                                        
+                                        for(int i = 0;i < retailProducts.size();i++){
                                 %>
                                 <li class="col-md-3 col-sm-6 col-xs-12 product">
                                     <span class="product-thumb-info">
                                         <span class="product-thumb-info-image">
                                             <img alt="" class="img-responsive" src="../../..<%=retailProducts.get(i).getImageUrl()%>">
                                         </span>
-                                        
                                         <span class="product-thumb-info-content">
                                             <h4><%=retailProducts.get(i).getName()%></h4>
                                             <%
@@ -63,36 +48,17 @@
                                             %>
                                             <span class="product-thumb-info-act-left"><em>Price: <%=normalPrice%></em></span>
                                             <br/>
-                                            <form action="retailProductDetails.jsp" method="get">
+                                            <form action="retailProductDetails.jsp">
                                                 <input type="hidden" name="sku" value="<%=retailProducts.get(i).getSKU()%>"/>
-                                                
-                                                     <!--pass over-->
-                                                     <input type="hidden" name="retailNo" value="<%=i%>"/>
-                                                     <input type="hidden" name="category" value="<%=retailProducts.get(i).getCategory()%>"/>
                                                 <input type="submit" class="btn btn-primary btn-block" value="More Details"/>
                                             </form>
-                                           <%
-                                                if (isMemberLoggedIn == true) {
-                                            %>
-                                             <form action="../../ECommerce_AddRetailToListServlet">
-                                                <input type="hidden" name="id" value="<%=retailProducts.get(i).getId()%>"/>
-                                                <input type="hidden" name="SKU" value="<%=retailProducts.get(i).getSKU()%>"/>
-                                                <input type="hidden" name="price" value="<%=retailProducts.get(i).getPrice()%>"/>
-                                                <input type="hidden" name="name" value="<%=retailProducts.get(i).getName()%>"/>
-                                                <input type="hidden" name="imageURL" value="<%=retailProducts.get(i).getImageUrl()%>"/>
-                                                <input type="submit" name="btnEdit" class="btn btn-primary btn-block" value="Add To Cart"/>
-                                            </form>
-                                                 <%
-                                                }
-}
-                                            %>
                                         </span>
                                     </span>
                                 </li>
                                 <%
+                                    }
                                     } catch (Exception ex) {
                                         System.out.println(ex);
-                                        ex.printStackTrace();
                                     }
                                 %>
 

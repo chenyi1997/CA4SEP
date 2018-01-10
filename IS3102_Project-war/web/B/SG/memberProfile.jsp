@@ -346,7 +346,6 @@
                                                     <option value="Zimbabwe">Zimbabwe</option>
                                                 </select>
                                         </div>
-                                                
                                         <div class="form-group">
                                             <label>Address</label>
                                             <input class="form-control" type="text" required="true" name="address" value="<%=member.getAddress()%>">
@@ -414,7 +413,7 @@
                     </div>
                 </div>
                 <%
-                        session.removeAttribute("member");
+                        //session.removeAttribute("member");
                     } catch (Exception ex) {
                         ex.printStackTrace();
                         response.sendRedirect("index.jsp");
