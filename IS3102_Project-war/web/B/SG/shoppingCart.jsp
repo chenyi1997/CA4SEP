@@ -15,7 +15,8 @@
             double finalPrice = 0.0;
         %>
         <script>
-            var totalPrice = 0;
+            var 
+            Price = 0;
             for (var i = 0, n = shoppingCart.getItems().size; i < n; i++) {
                 totalPrice += shoppingCart.getItems().get(i).get
             }
@@ -37,6 +38,7 @@
                     document.shoppingCart.submit();
                 }
             }
+            
             function checkAll(source) {
                 checkboxes = document.getElementsByName('delete');
                 for (var i = 0, n = checkboxes.length; i < n; i++) {
@@ -53,6 +55,7 @@
                 document.shoppingCart.action = "../../ECommerce_AddFurnitureToListServlet?SKU=" + SKU + "&price=" + price + "&name=" + name + "&imageURL=" + imageURL;
                 document.shoppingCart.submit();
             }
+            
             function finalTotalPrice() {
                 checkboxes = document.getElementsById('totalPrice');
                 for (var i = 0, n = checkboxes.length; i < n; i++) {
@@ -127,41 +130,43 @@
                                                         <%ArrayList<ShoppingCartLineItem> shoppingCart = (ArrayList<ShoppingCartLineItem>) (session.getAttribute("shoppingCart"));
                                                             try {
                                                                 if (shoppingCart != null && shoppingCart.size() > 0) {
-                                                                    //for (ShoppingCartLineItem item : shoppingCart) {
+                                                                    for (ShoppingCartLineItem item : shoppingCart) {
+                                                                        finalPrice += item.getQuantity()*item.getPrice();
                                                         %>
                                                         <tr class="cart_table_item">
                                                             <td class="product-remove">
-                                                                <input type="checkbox" name="delete" value="" />
+                                                                <input type="checkbox" name="delete" value="<%=item.getSKU()%>" />
                                                             </td>
                                                             <td class="product-thumbnail">
                                                                 <a href="furnitureProductDetails.jsp">
-                                                                    <img width="100" height="100" alt="" class="img-responsive" src="../../..<%=ImageURL()%>">
+                                                                    <img width="100" height="100" alt="" class="img-responsive" src="../../..<%=item.getImageURL()%>">
                                                                 </a>
                                                             </td>
                                                             <td class="product-name">
-                                                                <a class="productDetails" href="furnitureProductDetails.jsp">Insert product name</a>
+                                                                <a class="productDetails" href="furnitureProductDetails.jsp?sku=<%=item.getSKU()%> "><%=item.getName()%></a>
                                                             </td>
                                                             <td class="product-price">
-                                                                $<span class="amount" id="price<%=SKU()%>">
-                                                                    insert price here
+                                                                $<span class="amount" id="price<%=item.getSKU()%>">
+                                                                    <%=item.getPrice()%>
                                                                 </span>
                                                             </td>
                                                             <td class="product-quantity">
                                                                 <form enctype="multipart/form-data" method="post" class="cart">
                                                                     <div class="quantity">
-                                                                        <input type="button" class="minus" value="-" onclick="minus('<%=SKU()%>')">
-                                                                        <input type="text" disabled="true" class="input-text qty text" title="Qty" value="" name="quantity" min="1" step="1" id="<%=SKU()%>">
-                                                                        <input type="button" class="plus" value="+" onclick="plus('<%=SKU()%>', '<%=Name()%>',<%=Price()%>, '<%=ImageURL()%>')">
+                                                                        <input type="button" class="minus" value="-" onclick="minus('<%=item.getSKU()%>')">
+                                                                        <input type="text" disabled="true" class="input-text qty text" title="Qty" value="<%=item.getQuantity()%>" name="quantity" min="1" step="1" id="<%=item.getSKU()%>">
+                                                                        <input type="button" class="plus" value="+" onclick="plus('<%=item.getSKU()%>', '<%=item.getName()%>',<%=item.getPrice()%>, '<%=item.getImageURL()%>')">
                                                                     </div>
                                                                 </form>
                                                             </td>
                                                             <td class="product-subtotal">
-                                                                $<span class="amount" id="totalPrice<%=SKU()%>">
-                                                                    insert total price here
+                                                                    $<span class="amount" id="totalPrice<%=item.getSKU()%>">
+                                                                    <%=item.getPrice() * item.getQuantity()%>
                                                                 </span>
                                                             </td>
                                                         </tr>
                                                         <%                                                                 //   }
+                                                                }
                                                                 }
                                                             } catch (Exception ex) {
                                                                 System.out.println(ex);
@@ -176,8 +181,9 @@
                                                                 Total: 
                                                             </td>
                                                             <td class="product-subtotal">
-                                                                $<span class="amount" id="finalPrice" name="finalPrice">
-                                                                    
+                                                                $<span class="amount" id="finalPrice" name="finalPrice" value="<%=finalPrice%>">
+                                                                    <%=finalPrice%>
+                                                               
                                                                 </span>
                                                             </td>
                                                         </tr>
