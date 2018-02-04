@@ -13,7 +13,8 @@
         isMemberLoggedIn = true;
     }
     String category = URLDecoder.decode(request.getParameter("cat"));
-    if (category == null) {
+    
+    if (category == null) { 
         pageContext.forward("/ECommerce_SelectCountry");
     }
 %>
@@ -23,6 +24,7 @@
         <%
             List<Furniture> furnitures = (List<Furniture>) (session.getAttribute("furnitures"));
             System.out.println("furniture size:" + furnitures.size());
+     
         %>
         <div class="body">
             <jsp:include page="menu2.jsp" />
@@ -47,11 +49,9 @@
                         <div class="row">
                             <ul class="products product-thumb-info-list" data-plugin-masonry>
                                 <%
-                                    try {
-                                        /**
-                                         * *insert code here**
-                                         */
-                                        for(int i = 0;i < furnitures.size();i++){
+                                    try{
+                                        /*Insert code here*/
+                                       for(int i =0;i<furnitures.size();i++){                                                                                                            
                                 %>
                                 <li class="col-md-3 col-sm-6 col-xs-12 product">
                                     <span class="product-thumb-info">
@@ -68,6 +68,11 @@
                                             <br/>
                                             <form action="furnitureProductDetails.jsp">
                                                 <input type="hidden" name="sku" value="<%=furnitures.get(i).getSKU()%>"/>
+                                                <input type="hidden" name="category" value="<%=furnitures.get(i).getCategory()%>">
+                       
+                                               
+                                                <input type="hidden" name="furnitureNo" value="<%=i%>"/>
+                                                <input type="hidden" name="category" value="<%=category%>"/>
                                                 <input type="submit" class="btn btn-primary btn-block" value="More Details"/>
                                             </form>
                                             <%
@@ -79,16 +84,17 @@
                                                 <input type="hidden" name="price" value="<%=furnitures.get(i).getPrice()%>"/>
                                                 <input type="hidden" name="name" value="<%=furnitures.get(i).getName()%>"/>
                                                 <input type="hidden" name="imageURL" value="<%=furnitures.get(i).getImageUrl()%>"/>
+                                                <input type="hidden" name="category" value="<%=furnitures.get(i).getCategory()%>">
                                                 <input type="submit" name="btnEdit" class="btn btn-primary btn-block" value="Add To Cart"/>
                                             </form>
                                             <%
+                                                    }
                                                 }
                                             %>
                                         </span>
                                     </span>
                                 </li>
                                 <%
-                                        }
                                     } catch (Exception ex) {
                                         System.out.println(ex);
                                         ex.printStackTrace();
