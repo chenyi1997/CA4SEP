@@ -5,16 +5,9 @@
  */
 package B_servlets;
 
-import EntityManager.MemberEntity;
-import HelperClasses.Member;
+
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -30,83 +23,101 @@ import javax.ws.rs.core.Response;
 
 /**
  *
- * @author samue
+ * @author ChenYi
  */
 @WebServlet(name = "ECommerce_MemberEditProfileServlet", urlPatterns = {"/ECommerce_MemberEditProfileServlet"})
 public class ECommerce_MemberEditProfileServlet extends HttpServlet {
-
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    
+  
+    private String result = "";
+   
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, SQLException {
-        String name = request.getParameter("name");
-        String password = request.getParameter("password");
-        String secondpassword = request.getParameter("repassword");
-        String email = request.getParameter("email");
-        String phone = request.getParameter("phone");
-        String country = request.getParameter("country");
-        String address = request.getParameter("address");
-        String secQuestion = request.getParameter("securityQuestion");
-        String secAnswer = request.getParameter("securityAnswer");
-        String age = request.getParameter("age");
-        String income = request.getParameter("income");
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        HttpSession session = request.getSession(); 
         
-        if (password != null && secondpassword != null && password.length() > 0 && secondpassword.length() > 0){
-            if (!password.equals(secondpassword)) {
-                response.sendRedirect("/IS3102_Project-war/B/SG/memberProfile.jsp?errMsg=Passwords do not match. Please key again.");
-                return;
-            }else if (password.length() < 8){
-                response.sendRedirect("/IS3102_Project-war/B/SG/memberProfile.jsp?errMsg=Passwords too short. At least 8 characters.");
-                return;
+        try{
+            /*
+            To retrieve user email through session
+            */      
+            String email = (String)request.getParameter("email");
+            
+            String name = request.getParameter("name");
+            String phone = request.getParameter("phone");
+            String address = request.getParameter("address");
+            String city = request.getParameter("country");
+            int securityQuestion = Integer.parseInt(request.getParameter("securityQuestion"));
+            String securityAnswer = request.getParameter("securityAnswer");
+            int age =Integer.parseInt(request.getParameter("age"));
+            int income =Integer.parseInt(request.getParameter("income"));                    
+            String password = request.getParameter("password");      
+            
+            if (password != null && password != "" ) {
+                String repassword = request.getParameter("repassword");
+                
+                /**
+                 * The server side validation
+                 * 
+                 */
+                //i was talking about this redirect
+                if (repassword.equals(password)) { // If the repeated password is correct
+                    result = updateMemberDetail(name,email,phone,city,address,securityQuestion,securityAnswer,age,income,password);
+                    response.sendRedirect("ECommerce_GetMember?goodMsg=Account updated successfully");
+                } 
+                else { 
+                    // password properly
+                    
+                    result = "errMsg=Your password does not match the repeated input.";
+                    response.sendRedirect("/IS3102_Project-war/B/SG/memberProfile.jsp?");  
+                }
+            } else { // Only update details
+                result = updateMemberDetail(name,email,phone,city,address,securityQuestion,securityAnswer,age,income, null);
+                response.sendRedirect("ECommerce_GetMember?goodMsg=Account updated successfully");  
+            }           
+            
+
+           
+        }catch(Exception ex){
+            out.println(ex);
+            ex.printStackTrace();
+        }
+      
+    }
+    
+    public String updateMemberDetail(String name,String email,String phone,String city,String address, int securityQuestion,String securityAnswer,int age,int income,String password){
+        try{
+           Client client = ClientBuilder.newClient();
+
+            WebTarget target = client
+                .target("http://localhost:8080/IS3102_WebService-Student/webresources/entity.memberentity/updateMemberByEmail")                
+                    .queryParam("name", name)
+                    .queryParam("email", email)
+                    .queryParam("phone", phone)
+                    .queryParam("city", city)
+                    .queryParam("address", address)
+                    .queryParam("securityQuestion",securityQuestion)
+                    .queryParam("securityAnswer",securityAnswer)
+                    .queryParam("age",age)
+                    .queryParam("income",income)
+                    .queryParam("passwordHash", password);
+               
+            Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
+            Response res = invocationBuilder.get();
+            
+            if (res.getStatus() == 200) {
+                return "goodMsg=Your profile has been updated.";
+            }
+            
+            
+            else{
+                return "errorMsg"+res.getStatus();
             }
         }
-        if (name.length() <= 0 ||
-            email.length() <= 0 ||
-            phone.length() <= 0 ||
-            address.length() <= 0 ||
-            secQuestion.length() <= 0 ||
-            secAnswer.length() <= 0 ||
-            age.length() <= 0 ||
-            income.length() <= 0)
-        {
-            response.sendRedirect("/IS3102_Project-war/B/SG/memberProfile.jsp?errMsg=Some fields are empty!");
-            return;
+        catch(Exception ex){
+            ex.printStackTrace();
+            return ex.getMessage();
         }
-
-        
-        HttpSession session = request.getSession();
-        Member member = (Member) session.getAttribute("member");
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client
-                .target("http://localhost:8080/IS3102_WebService-Student/webresources/entity.memberentity").path("edit")
-                .queryParam("id", member.getId())
-                .queryParam("name", name)
-                .queryParam("email", email)
-                .queryParam("phone", phone)
-                .queryParam("city", country)
-                .queryParam("address", address)
-                .queryParam("securityQuestion", secQuestion)
-                .queryParam("securityAnswer", secAnswer)
-                .queryParam("age", age)
-                .queryParam("income", income)
-                .queryParam("password", password);
-        Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
-        Response res = invocationBuilder.get();
-
-       if (res.getStatus() != 200) {
-            response.sendRedirect("/IS3102_Project-war/B/SG/memberProfile.jsp?errMsg=error");
-        }
-       else {
-           response.sendRedirect("ECommerce_GetMember?goodMsg=Account Updated Successfully");
-        }
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -121,11 +132,7 @@ public class ECommerce_MemberEditProfileServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(ECommerce_MemberEditProfileServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        processRequest(request, response);
     }
 
     /**
@@ -139,11 +146,7 @@ public class ECommerce_MemberEditProfileServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(ECommerce_MemberEditProfileServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        processRequest(request, response);
     }
 
     /**
@@ -157,3 +160,4 @@ public class ECommerce_MemberEditProfileServlet extends HttpServlet {
     }// </editor-fold>
 
 }
+
