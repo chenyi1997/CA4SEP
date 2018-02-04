@@ -32,47 +32,62 @@ public class ECommerce_AddFurnitureToListServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        
         HttpSession session = request.getSession();
-      
+        PrintWriter out = response.getWriter();
         
         try {
             //get Values
             String SKU = request.getParameter("SKU");
             String category = (String) request.getParameter("cat");
-            long id = Long.parseLong(request.getParameter("id"));
-            double price = Double.parseDouble(request.getParameter("price"));
             String name = request.getParameter("name");
-            String imageURL = request.getParameter("imageURL");
-            int itemQty = (Integer.parseInt(getQuantity(SKU)));
-        
-            //got stock 
-            if (itemQty > 0) {
+            int quantity = getQuantity(SKU);
+            
+            //check if got stock
+            if (quantity > 0) {
+
                 ArrayList<ShoppingCartLineItem> shoppingCart;
+
+                //create item
                 ShoppingCartLineItem item = new ShoppingCartLineItem();
-                item.setImageURL(imageURL);
+                item.setId(request.getParameter("id"));
+                item.setImageURL(request.getParameter("imageURL"));
                 item.setName(name);
                 item.setSKU(SKU);
-                item.setPrice(price);
+                item.setPrice(Double.parseDouble(request.getParameter("price")));
 
-                //got stock & cart
+                //got item & cart
                 if (session.getAttribute("shoppingCart") != null) {
+                    //got cart
                     shoppingCart = (ArrayList<ShoppingCartLineItem>) session.getAttribute("shoppingCart");
-                    for (ShoppingCartLineItem i : shoppingCart) {
-                        if (i.equals(item)) {
-                            i.setQuantity(i.getQuantity() + 1);
-                            i.setName(name);
-                            i.setImageURL(imageURL);
-                            i.setPrice(price);
-                            i.setSKU(SKU);
-                        }
 
+                    if (shoppingCart.contains(item)) {
+                        //get the currentItem
+                        for (ShoppingCartLineItem currentItem : shoppingCart) {
+                            //if contains the item
+                            if (currentItem.equals(item)) {
+                                int currQuantity = currentItem.getQuantity();
+                                // if quantity over stock 
+                                if (currQuantity + 1 <= quantity) {
+                                    currentItem.setQuantity(currQuantity + 1);
+                                } else {
+                                    response.sendRedirect("/IS3102_Project_war/B/SG/shoppingCart.jsp?="
+                                            + URLEncoder.encode(category)
+                                            + "&errorMsg=Item not added to cart, not enough quantity available.");
+                                }
+                                break;
+                            }
+                        }
+                    } else {
+                        item.setQuantity(1);
+                        shoppingCart.add(item);
                     }
                 } else {
                     //Create the shoppingCart
                     shoppingCart = new ArrayList();
+                    item.setQuantity(1);
                     shoppingCart.add(item);
                     System.out.println(item);
-
                 }
                 session.setAttribute("shoppingCart", shoppingCart);
                 String goodMsg = "Item successfully added into the cart!";
@@ -81,16 +96,16 @@ public class ECommerce_AddFurnitureToListServlet extends HttpServlet {
             else {
                 //no stock
                 String errMsg="Item not added to cart, not enough quantity available.";
-                response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp?errMsg="
-                        + errMsg);
+                response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp?errMsg="+errMsg);
             }  
         } catch (Exception ex) {
-            response.sendRedirect("/IS3102_Project_war/B/SG/shoppingCart.jsp?" );
+            String errMsg="Item not added to cart, not enough quantity available.";
+            response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp?errMsg="+errMsg);
             ex.printStackTrace();
         }
     }
 
-    public String getQuantity(String SKU) {
+    public int getQuantity(String SKU) {
         Client client = ClientBuilder.newClient();
         WebTarget target = client
                 .target("http://localhost:8080/IS3102_WebService-Student/webresources/entity.storeentity/getQuantity")
@@ -100,15 +115,10 @@ public class ECommerce_AddFurnitureToListServlet extends HttpServlet {
         Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
         
         Response res = invocationBuilder.get();
-        
-        if (res.getStatus() == 200) {
-            //int quantity = (Integer)res.getEntity();
-            String quantity = res.readEntity(String.class);
+        int quantity = Integer.parseInt(res.readEntity(String.class));
             
-            return quantity;
-        } else {
-            return null;
-        }
+        return quantity;
+
     }
     
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
