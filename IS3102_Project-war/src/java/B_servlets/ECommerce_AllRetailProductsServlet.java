@@ -31,6 +31,10 @@ public class ECommerce_AllRetailProductsServlet extends HttpServlet {
             session.setAttribute("retailProducts", retailProducts);
 
             response.sendRedirect("/IS3102_Project-war/B/SG/allRetailProducts.jsp");
+        
+            if(retailProducts==null){
+                response.sendRedirect("/IS3102_Project-war/B/SG/allRetailProducts.jsp?"+"errorMsg=NoRetailProdut");
+            }
         } catch (Exception ex) {
             out.println("\n\n " + ex.getMessage());
         }
