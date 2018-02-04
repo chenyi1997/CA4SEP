@@ -21,7 +21,6 @@
             List<RetailProduct> retailProducts = (List<RetailProduct>) (session.getAttribute("retailProducts"));
             RetailProduct retailProduct = new RetailProduct();
             List<StoreEntity> storesInCountry = (List<StoreEntity>) session.getAttribute("storesInCountry");
-            /*insert code here*/
             for(RetailProduct product : retailProducts){
                 if (product.getSKU().equals(sku)){
                     retailProduct = product;
