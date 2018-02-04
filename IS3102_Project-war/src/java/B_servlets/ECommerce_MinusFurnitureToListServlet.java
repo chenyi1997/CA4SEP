@@ -24,7 +24,7 @@ import javax.ws.rs.core.Response;
 
 /**
  *
- * @author warren
+ * @author ChenYi
  */
 @WebServlet(name = "ECommerce_MinusFurnitureToListServlet", urlPatterns = {"/ECommerce_MinusFurnitureToListServlet"})
 public class ECommerce_MinusFurnitureToListServlet extends HttpServlet {
@@ -33,7 +33,8 @@ public class ECommerce_MinusFurnitureToListServlet extends HttpServlet {
     ArrayList<ShoppingCartLineItem> shoppingCart;
     ShoppingCartLineItem shoppingCartLineItem;
     int quantity =0;
-
+    boolean Reduced = false;
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -48,9 +49,10 @@ public class ECommerce_MinusFurnitureToListServlet extends HttpServlet {
         // response.getOutputStream().println(request.getParameter("quantity"));
         shoppingCart = (ArrayList<ShoppingCartLineItem>) session.getAttribute("shoppingCart");
         shoppingCartLineItem = new ShoppingCartLineItem();
+        Reduced = false;
         try {
-            if(removeItem(SKU)){ 
-                if (quantity != 1) {
+            if(reduceQuantity(SKU)){ 
+                if (Reduced) {
                     String goodMsg = "Item quantity reduced successfully!";
                     response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp?goodMsg=" + goodMsg);  
                 } 
@@ -58,6 +60,9 @@ public class ECommerce_MinusFurnitureToListServlet extends HttpServlet {
                     String errMsg = "Error. Quantity cannot be less than 1";
                     response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp?errMsg=" + errMsg);
                 }
+            }else{
+                String errMsg = "Item not found";
+                response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp?errMsg=" + errMsg);
             }
         } catch (Exception ex) {
 
@@ -65,14 +70,15 @@ public class ECommerce_MinusFurnitureToListServlet extends HttpServlet {
 
     }
     
-    public boolean removeItem(String SKU) {
+    public boolean reduceQuantity(String SKU) {
         if (shoppingCart != null) {
             for (ShoppingCartLineItem i:shoppingCart) {
                 if (i.getSKU().equals(SKU)) {
                     if (i.getQuantity() == 1) {
                         shoppingCartLineItem.setName(i.getName());
-                        break;
+                        return true;
                     }
+                    Reduced = true;
                     quantity = i.getQuantity() - 1;
                     i.setQuantity(quantity);
                     shoppingCartLineItem = i;
