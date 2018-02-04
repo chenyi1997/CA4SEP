@@ -41,8 +41,9 @@
                                         <span class="product-thumb-info-image">
                                             <img alt="" class="img-responsive" src="../../..<%=retailProducts.get(i).getImageUrl()%>">
                                         </span>
+                                        <h4><%=retailProducts.get(i).getName()%></h4>
                                         <span class="product-thumb-info-content">
-                                            <h4><%=retailProducts.get(i).getName()%></h4>
+                                            
                                             <%
                                                 String normalPrice = "$" + retailProducts.get(i).getPrice() + "0";
                                             %>
@@ -50,6 +51,7 @@
                                             <br/>
                                             <form action="retailProductDetails.jsp">
                                                 <input type="hidden" name="sku" value="<%=retailProducts.get(i).getSKU()%>"/>
+                                            
                                                 <input type="submit" class="btn btn-primary btn-block" value="More Details"/>
                                             </form>
                                         </span>
