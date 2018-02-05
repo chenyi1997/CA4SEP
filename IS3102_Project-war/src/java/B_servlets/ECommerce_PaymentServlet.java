@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import static java.lang.System.out;
 import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -64,21 +65,32 @@ public class ECommerce_PaymentServlet extends HttpServlet {
             Response res = createPaymentRecord(memberId,finalPrice,countryId);
            
             if(res.getStatus()==200){
-                long salesRecordId = Long.parseLong(res.readEntity(String.class));
+                ArrayList<Integer> allIdOfitems = new ArrayList<Integer>(); 
+                int salesRecordId = Integer.parseInt(res.readEntity(String.class));
+                //response.getOutputStream().println(salesRecordId);
                //link shopping cart item to the sales record
                 
                 for(ShoppingCartLineItem item: shoppingCart){
                     //add the corresponding line item data to database
+                    
+                    // decrease quantity ?
                     Response itemResponse = updateQuantityItemRecord(salesRecordId,item);    
+                    String itemid = itemResponse.readEntity(String.class);
+                    
+                    //if item.getId is working, you can simplify my code
+                    Response lineitemrecordResponse = createECommerceLineItemRecord(item,Integer.parseInt(itemid), item.getQuantity(), salesRecordId);
+                    String success = lineitemrecordResponse.readEntity(String.class);
+                    response.getOutputStream().println(success);
                 }
+                
+                
                 
                 //reset the shooppingCart
                 session.setAttribute("shoppingCart", new ArrayList<>());
                 session.setAttribute("transactionId", salesRecordId);
                 out.println(salesRecordId);
                 //retriee shop info for collection
-                
-                 //get back to shoppingCart
+                 
                     response.sendRedirect("/IS3102_Project-war/B/SG/shoppingCart.jsp"
                             + "?goodMsg="
                             + "Thank you for shopping at Island Furniture. You have checkout successfully!");              
@@ -97,14 +109,15 @@ public class ECommerce_PaymentServlet extends HttpServlet {
                             + "Error checking out.");
             }   
         }
-    
+    //wrong path, i suspect...
     public Response updateQuantityItemRecord(long salesRecordID,ShoppingCartLineItem item){
         Client client = ClientBuilder.newClient();
         WebTarget target = client
                 .target("http://localhost:8080/IS3102_WebService-Student/webresources/commerce")
-                .path("updateQuantityFromItem")
-                .queryParam("salesRecordID", salesRecordID)
-                .queryParam("itemEntityID", item.getId())
+                .path("updateQuantityItemRecord")
+                .queryParam("storeID", 59)
+                //hope ur item.getsku is working
+                .queryParam("SKU", item.getSKU())
                 .queryParam("quantity",item.getQuantity())
                 .queryParam("countryID",item.getCountryID());
 
@@ -127,6 +140,17 @@ public class ECommerce_PaymentServlet extends HttpServlet {
 //        return result;
     }
 
+    public Response createECommerceLineItemRecord(ShoppingCartLineItem item,int IDs, int Quantities, int salesrecordid) {
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client
+                .target("http://localhost:8080/IS3102_WebService-Student/webresources/commerce")
+                .path("createECommerceLineItemRecord")
+                .queryParam("ItemIDs", IDs)
+                .queryParam("Quantity", Quantities)
+                .queryParam("salesRecordID", salesrecordid);
+        Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
+        return invocationBuilder.put(Entity.entity(item,MediaType.APPLICATION_JSON));
+    }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
