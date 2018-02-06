@@ -73,11 +73,10 @@
                 });
             }
             function makePayment() {
-//                if($("#txtName").val().length<=0 || $("#txtCardNo").val().length<=0 ||
-//                  $("#txtSecurity").val().length<=0 || $("#year").val().length<=0 ){
-//                   alert("Please fill up the blanks for payment details");
-//                 return;
-//              }
+                if($("#txtName").val().length<=0 || $("#txtCardNo").val().length<=0 ||$("#txtSecuritycode").val().length<=0 || $("#year").val().length<=0 ){
+                   alert("Please fill up the blanks for payment details");
+                 return;
+              }
                 window.event.returnValue = true;
                 document.makePaymentForm.action = "../../ECommerce_PaymentServlet";
                 document.makePaymentForm.submit();
